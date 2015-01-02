@@ -1,0 +1,4 @@
+Hash.js
+=======
+
+Hash functions.
