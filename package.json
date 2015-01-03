@@ -1,9 +1,9 @@
 {
   "name": "uupaa.hash.js",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Hash functions.",
   "url": "https://github.com/uupaa/Hash.js",
-  "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "Huffman", "xxHash", "uupaa", "WebModule", "Unstable"],
+  "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "xxHash", "uupaa", "WebModule", "Unstable"],
   "repository": {
     "type": "git",
     "url": "https://github.com/uupaa/Hash.js.git"
@@ -29,7 +29,7 @@
   },
   "webmodule": {
     "develop": false,
-    "label": ["@dev", "@md5", "@sha1", "@hmac", "@adler32", "@xxhash", "@huffman"],
+    "label": ["@dev", "@md5", "@sha1", "@hmac", "@adler32", "@xxhash"],
     "browser": {
       "source": ["lib/Hash.js"],
       "output": "release/Hash.b.min.js"

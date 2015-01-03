@@ -53,9 +53,6 @@ return new Test("Hash", {
         // --- XXHash ---
         testXXHash,
 
-        // --- Huffman ---
-        testHuffman,
-
     ]).run().clone();
 
 // --- MD5 ---
@@ -373,13 +370,6 @@ function createBigArray(length) {
         result[i] = i;
     }
     return result;
-}
-
-// --- Huffman ---
-function testHuffman(test, pass, miss) {
-
-    // TODO: test impl.
-    test.done(pass());
 }
 
 })((this || 0).self || global);
