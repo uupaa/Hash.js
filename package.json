@@ -1,6 +1,6 @@
 {
   "name": "uupaa.hash.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hash functions.",
   "url": "https://github.com/uupaa/Hash.js",
   "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "xxHash", "uupaa", "WebModule", "Unstable"],
@@ -41,6 +41,10 @@
     "node": {
       "source": ["lib/Hash.js"],
       "output": "release/Hash.n.min.js"
+    },
+    "nw": {
+      "source": ["lib/Hash.js"],
+      "output": "release/Hash.nw.min.js"
     }
   },
   "dependencies": {},

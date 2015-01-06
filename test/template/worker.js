@@ -11,10 +11,7 @@ onmessage = function(event) {
         self.console.error = function() {};
     }
 
-    importScripts(".././test/wmtools.js");
-    importScripts("../lib/Hash.js");
-    importScripts("../release/Hash.w.min.js");
-    importScripts("./testcase.js");
+    __SCRIPT__
 
     self.postMessage({ TEST_ERROR_MESSAGE: self.TEST_ERROR_MESSAGE || "" });
 };

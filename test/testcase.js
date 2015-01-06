@@ -1,8 +1,10 @@
 var ModuleTestHash = (function(global) {
 
-var _runOnNode = "process" in global;
-var _runOnWorker = "WorkerLocation" in global;
-var _runOnBrowser = "document" in global;
+var _isNodeOrNodeWebKit = !!global.global;
+var _runOnNodeWebKit =  _isNodeOrNodeWebKit && /native/.test(setTimeout);
+var _runOnNode       =  _isNodeOrNodeWebKit && !/native/.test(setTimeout);
+var _runOnWorker     = !_isNodeOrNodeWebKit && "WorkerLocation" in global;
+var _runOnBrowser    = !_isNodeOrNodeWebKit && "document" in global;
 
 var U8A_HEX       = Hash.U8A_HEX;
 var U8A_STR       = Hash.U8A_STR;
@@ -24,6 +26,7 @@ return new Test("Hash", {
         browser:    true,
         worker:     true,
         node:       true,
+        nw:         true,
         button:     true,
         both:       true, // test the primary module and secondary module
     }).add([
