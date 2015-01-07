@@ -21,7 +21,7 @@ var Adler32String = Hash.Adler32String;
 var XXHash        = Hash.XXHash;
 var XXHashString  = Hash.XXHashString;
 
-return new Test("Hash", {
+var test = new Test("Hash", {
         disable:    false,
         browser:    true,
         worker:     true,
@@ -29,34 +29,50 @@ return new Test("Hash", {
         nw:         true,
         button:     true,
         both:       true, // test the primary module and secondary module
-    }).add([
-        // --- MD5 ---
-        testMD5_String,
-        testMD5_Binary,
+    });
 
-        // --- SHA1 ---
-        testSHA1_String,
-        testSHA1_Binary,
+    if (Hash.MD5) {
+        test.add([
+            testMD5_String,
+            testMD5_Binary,
+        ]);
+    }
+    if (Hash.SHA1) {
+        test.add([
+            testSHA1_String,
+            testSHA1_Binary,
+        ]);
+    }
+    if (Hash.HMAC) {
+        if (Hash.MD5) {
+            test.add([
+                testHMAC_MD5_String,
+                testHMAC_MD5_StringWithKey,
+                testHMAC_MD5_Binary,
+                testHMAC_MD5,
+            ]);
+        }
+        if (Hash.SHA1) {
+            test.add([
+                testHMAC_SHA1_String,
+                testHMAC_SHA1_StringWithKey,
+                testHMAC_SHA1_Binary,
+                testHMAC_SHA1,
+            ]);
+        }
+    }
+    if (Hash.Adler32) {
+        test.add([
+            testAdler32,
+        ]);
+    }
+    if (Hash.XXHash) {
+        test.add([
+            testXXHash,
+        ]);
+    }
 
-        // --- HMAC ---
-        testHMAC_MD5_String,
-        testHMAC_MD5_StringWithKey,
-        testHMAC_MD5_Binary,
-
-        testHMAC_SHA1_String,
-        testHMAC_SHA1_StringWithKey,
-        testHMAC_SHA1_Binary,
-
-        testHMAC_MD5,
-        testHMAC_SHA1,
-
-        // --- Adler32 ---
-        testAdler32,
-
-        // --- XXHash ---
-        testXXHash,
-
-    ]).run().clone();
+return test.run().clone();
 
 // --- MD5 ---
 function testMD5_String(test, pass, miss) {
