@@ -399,21 +399,35 @@ function createBigArray(length) {
 
 // --- CRC32 ---
 function testCRC32(test, pass, miss) {
-    var u8 = new Uint8Array(4);
-    u8[0] = "IEND".charCodeAt(0);
-    u8[1] = "IEND".charCodeAt(1);
-    u8[2] = "IEND".charCodeAt(2);
-    u8[3] = "IEND".charCodeAt(3);
+    var png_IEND      = new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,                                                                               0xAE, 0x42, 0x60, 0x82]);
+    var png_IDAT_3x3  = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x08, 0x06, 0x00, 0x00, 0x00, 0x56, 0x28, 0xB5, 0xBF]);
+    //                                  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~  ~~~~  ~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~
+    //                                    chunkDataSize = 13         "IHDR"                   width                     height          depth type       dummy                checksum
+    var png_IDAT_gold = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xC8, 0x08, 0x02, 0x00, 0x00, 0x00, 0x22, 0x3A, 0x39, 0xC9]);
 
-    var result = Hash.CRC32(u8, 0);
+    var result1 = Hash.CRC32(png_IEND,      4, 4 + 0);
+    var result2 = Hash.CRC32(png_IDAT_3x3,  4, 4 + 13);
+    var result3 = Hash.CRC32(png_IDAT_gold, 4, 4 + 13);
 
-    if (result === 0xae426082) {
+    toHex(result1);
+    toHex(result2);
+    toHex(result3);
+
+    if (result1 === 0xAE426082 &&
+        result2 === 0x5628B5BF &&
+        result3 === 0x223A39C9) {
         test.done(pass());
     } else {
         test.done(miss());
     }
-}
 
+    function toHex(value) {
+        console.log(((value >>> 24) & 0xff).toString(16),
+                    ((value >> 16) & 0xff).toString(16),
+                    ((value >> 8) & 0xff).toString(16),
+                    ((value) & 0xff).toString(16));
+    }
+}
 
 })((this || 0).self || global);
 
