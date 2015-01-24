@@ -1,7 +1,7 @@
 var ModuleTestHash = (function(global) {
 
 var _isNodeOrNodeWebKit = !!global.global;
-var _runOnNodeWebKit =  _isNodeOrNodeWebKit && /native/.test(setTimeout);
+var _runOnNodeWebKit =  _isNodeOrNodeWebKit &&  /native/.test(setTimeout);
 var _runOnNode       =  _isNodeOrNodeWebKit && !/native/.test(setTimeout);
 var _runOnWorker     = !_isNodeOrNodeWebKit && "WorkerLocation" in global;
 var _runOnBrowser    = !_isNodeOrNodeWebKit && "document" in global;
@@ -20,6 +20,7 @@ var Adler32       = Hash.Adler32;
 var Adler32String = Hash.Adler32String;
 var XXHash        = Hash.XXHash;
 var XXHashString  = Hash.XXHashString;
+var CRC32         = Hash.CRC32;
 
 var test = new Test("Hash", {
         disable:    false,
@@ -69,6 +70,11 @@ var test = new Test("Hash", {
     if (Hash.XXHash) {
         test.add([
             testXXHash,
+        ]);
+    }
+    if (Hash.CRC32) {
+        test.add([
+            testCRC32,
         ]);
     }
 
@@ -390,6 +396,24 @@ function createBigArray(length) {
     }
     return result;
 }
+
+// --- CRC32 ---
+function testCRC32(test, pass, miss) {
+    var u8 = new Uint8Array(4);
+    u8[0] = "IEND".charCodeAt(0);
+    u8[1] = "IEND".charCodeAt(1);
+    u8[2] = "IEND".charCodeAt(2);
+    u8[3] = "IEND".charCodeAt(3);
+
+    var result = Hash.CRC32(u8, 0);
+
+    if (result === 0xae426082) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
 
 })((this || 0).self || global);
 
