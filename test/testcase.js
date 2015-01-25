@@ -21,6 +21,7 @@ var Adler32String = Hash.Adler32String;
 var XXHash        = Hash.XXHash;
 var XXHashString  = Hash.XXHashString;
 var CRC32         = Hash.CRC32;
+var HexDump       = Hash.HexDump;
 
 var test = new Test("Hash", {
         disable:    false,
@@ -405,28 +406,28 @@ function testCRC32(test, pass, miss) {
     //                                    chunkDataSize = 13         "IHDR"                   width                     height          depth type       dummy                checksum
     var png_IDAT_gold = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xC8, 0x08, 0x02, 0x00, 0x00, 0x00, 0x22, 0x3A, 0x39, 0xC9]);
 
-    var result1 = Hash.CRC32(png_IEND,      4, 4 + 0);
-    var result2 = Hash.CRC32(png_IDAT_3x3,  4, 4 + 13);
-    var result3 = Hash.CRC32(png_IDAT_gold, 4, 4 + 13);
+    var r1 = Hash.CRC32(png_IEND,      4, 4 + 0);
+    var r2 = Hash.CRC32(png_IDAT_3x3,  4, 4 + 13);
+    var r3 = Hash.CRC32(png_IDAT_gold, 4, 4 + 13);
 
-    toHex(result1);
-    toHex(result2);
-    toHex(result3);
+    if (HexDump) {
+        var hexOptions = { width: 8, joint: "", upper: true, noprefix: true };
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
+        HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
+        HexDump( new Uint8Array([r3 >>> 24, r3 >> 16, r3 >> 8, r3]), hexOptions);
+    }
 
-    if (result1 === 0xAE426082 &&
-        result2 === 0x5628B5BF &&
-        result3 === 0x223A39C9) {
+    if (r1 === 0xAE426082 &&
+        r2 === 0x5628B5BF &&
+        r3 === 0x223A39C9) {
         test.done(pass());
     } else {
         test.done(miss());
     }
+}
 
-    function toHex(value) {
-        console.log(((value >>> 24) & 0xff).toString(16),
-                    ((value >> 16) & 0xff).toString(16),
-                    ((value >> 8) & 0xff).toString(16),
-                    ((value) & 0xff).toString(16));
-    }
+// --- Utility ---
+function testHexDump(test, pass, miss) {
 }
 
 })((this || 0).self || global);
