@@ -25,6 +25,7 @@ console.log( Hash.HMACString("MD5",  "key", "The quick brown fox jumps over the 
 console.log( Hash.HMACString("SHA1", "key", "The quick brown fox jumps over the lazy dog") ); // "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9"
 console.log( Hash.Adler32String("The quick brown fox jumped over the lazy dogs.\n") ); // "9de210db"
 console.log( Hash.XXHashString("0123456789abcdef") ); // "c2c45b69"
+console.log( Hash.MurmurString("0123456789abcdef") ); // "36c7e0df"
 
 </script>
 ```
@@ -34,6 +35,7 @@ console.log( Hash.XXHashString("0123456789abcdef") ); // "c2c45b69"
 ```js
 importScripts("lib/Hash.js");
 
+...
 ```
 
 ### Node.js
@@ -41,4 +43,13 @@ importScripts("lib/Hash.js");
 ```js
 require("lib/Hash.js");
 
+...
+```
+
+### NodeWebKit
+
+```js
+<script src="lib/Hash.js"></script>
+
+...
 ```

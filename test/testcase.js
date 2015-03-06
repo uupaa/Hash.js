@@ -20,17 +20,20 @@ var Adler32       = Hash.Adler32;
 var Adler32String = Hash.Adler32String;
 var XXHash        = Hash.XXHash;
 var XXHashString  = Hash.XXHashString;
+var Murmur        = Hash.Murmur;
+var MurmurString  = Hash.MurmurString;
 var CRC32         = Hash.CRC32;
 var HexDump       = Hash.HexDump;
 
 var test = new Test("Hash", {
-        disable:    false,
-        browser:    true,
-        worker:     true,
-        node:       true,
-        nw:         true,
-        button:     true,
-        both:       true, // test the primary module and secondary module
+        disable:    false, // disable all tests.
+        browser:    true,  // enable browser test.
+        worker:     true,  // enable worker test.
+        node:       true,  // enable node test.
+        nw:         true,  // enable nw.js test.
+        button:     true,  // show button.
+        both:       true,  // test the primary and secondary modules.
+        ignoreError:false, // ignore error.
     });
 
     if (Hash.MD5) {
@@ -73,13 +76,16 @@ var test = new Test("Hash", {
             testXXHash,
         ]);
     }
+    if (Hash.Murmur) {
+        test.add([
+            testMurmur,
+        ]);
+    }
     if (Hash.CRC32) {
         test.add([
             testCRC32,
         ]);
     }
-
-return test.run().clone();
 
 // --- MD5 ---
 function testMD5_String(test, pass, miss) {
@@ -298,37 +304,69 @@ function testAdler32(test, pass, miss) {
     }
 }
 
+// --- Murmur ---
+function testMurmur(test, pass, miss) {
+// see https://gist.github.com/uupaa/8609d8d2d4ee6876eac1
+
+    var source = {
+            length_0:  "",
+            length_1:  "a",
+            length_2:  "ab",
+            length_3:  "abc",
+            length_4:  "abcd",
+            length_5:  "abcde",
+            length_6:  "abcdef",
+            length_7:  "abcdefg",
+            length_8:  "abcdefgh",
+            length_9:  "abcdefghi",
+            length_10: "abcdefghij",
+            length_11: "abcdefghijk",
+            length_16: "0123456789abcdef",
+            length_17: "0123456789abcdef0",
+            length_32: "0123456789abcdef" +
+                       "0123456789abcdef",
+            length_33: "0123456789abcdef" +
+                       "0123456789abcdef0",
+            length_64: "0123456789abcdef" +
+                       "0123456789abcdef" +
+                       "0123456789abcdef" +
+                       "0123456789abcdef",
+            bigArray: createBigArray(1024 * 100)
+        };
+
+    var result = [
+            Murmur(STR_U8A(source.length_0))         === 0x00000000,
+            Murmur(STR_U8A(source.length_1))         === 0x3c2569b2,
+            Murmur(STR_U8A(source.length_2))         === 0x9bbfd75f,
+            Murmur(STR_U8A(source.length_3))         === 0xb3dd93fa,
+            Murmur(STR_U8A(source.length_4))         === 0x43ed676a,
+            Murmur(STR_U8A(source.length_4), 0xabcd) === 0xb95c4c63,
+            Murmur(STR_U8A(source.length_5))         === 0xe89b9af6,
+            Murmur(STR_U8A(source.length_6))         === 0x6181c085,
+            Murmur(STR_U8A(source.length_7))         === 0x883c9b06,
+            Murmur(STR_U8A(source.length_8))         === 0x49ddccc4,
+            Murmur(STR_U8A(source.length_9))         === 0x421406f0,
+            Murmur(STR_U8A(source.length_10))        === 0x88927791,
+            Murmur(STR_U8A(source.length_11))        === 0x5f3b25df,
+            Murmur(STR_U8A(source.length_11), 123)   === 0x3cbdcdaa,
+            Murmur(STR_U8A(source.length_16))        === 0x36c7e0df,
+            Murmur(STR_U8A(source.length_17))        === 0x8efa0e6d,
+            Murmur(STR_U8A(source.length_32))        === 0xb3431dee,
+            Murmur(STR_U8A(source.length_33))        === 0x2ef10cb3,
+            Murmur(STR_U8A(source.length_64))        === 0x1329ed6a,
+            Murmur(STR_U8A(source.length_64), 64)    === 0x58638bb6,
+            Murmur(source.bigArray)                  === 0x74835d3a,
+        ];
+
+    if (!/false/.test(result.join(","))) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
 // --- XXHash ---
 // see https://gist.github.com/uupaa/8609d8d2d4ee6876eac1
-//
-//    printf("%x\n", XXH32("",             0, 0));      //  2cc5d05
-//    printf("%x\n", XXH32("a",            1, 0));      // 550d7456
-//    printf("%x\n", XXH32("ab",           2, 0));      // 4999fc53
-//    printf("%x\n", XXH32("abc",          3, 0));      // 32d153ff
-//    printf("%x\n", XXH32("abcd",         4, 0));      // a3643705
-//    printf("%x\n", XXH32("abcd",         4, 0xabcd)); // cda8fae4
-//    printf("%x\n", XXH32("abcde",        5, 0));      // 9738f19b
-//    printf("%x\n", XXH32("abcdef",       6, 0));      // 8b7cd587
-//    printf("%x\n", XXH32("abcdefg",      7, 0));      // 9dd093b3
-//    printf("%x\n", XXH32("abcdefgh",     8, 0));      //  bb3c6bb
-//    printf("%x\n", XXH32("abcdefghi",    9, 0));      // d03c13fd
-//    printf("%x\n", XXH32("abcdefghij",  10, 0));      // 8b988cfe
-//    printf("%x\n", XXH32("abcdefghijk", 11, 0));      // 9db8a215
-//    printf("%x\n", XXH32("abcdefghijk", 11, 123));    // 69659438
-//    printf("%x\n", XXH32("0123456789abcdef", 16, 0)); // c2c45b69
-//    printf("%x\n", XXH32("0123456789abcdef0",17, 0)); // aa9118bd
-//    printf("%x\n", XXH32("0123456789abcdef"
-//                         "0123456789abcdef", 32, 0)); // eb888d30
-//    printf("%x\n", XXH32("0123456789abcdef"
-//                         "0123456789abcdef0",33, 0)); // 5c28f38d
-//    printf("%x\n", XXH32("0123456789abcdef"
-//                         "0123456789abcdef"
-//                         "0123456789abcdef"
-//                         "0123456789abcdef", 64, 0)); // e717e5fb
-//    printf("%x\n", XXH32("0123456789abcdef"
-//                         "0123456789abcdef"
-//                         "0123456789abcdef"
-//                         "0123456789abcdef", 64, 64)); // 1198f54
 
 function testXXHash(test, pass, miss) {
 
@@ -429,6 +467,8 @@ function testCRC32(test, pass, miss) {
 // --- Utility ---
 function testHexDump(test, pass, miss) {
 }
+
+return test.run().clone();
 
 })((this || 0).self || global);
 
