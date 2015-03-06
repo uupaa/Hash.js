@@ -86,6 +86,12 @@ var test = new Test("Hash", {
             testCRC32,
         ]);
     }
+    // --- bench mark ---
+    if (Hash.XXHash && Hash.Murmur) {
+        test.add([
+            testBenchMark,
+        ]);
+    }
 
 // --- MD5 ---
 function testMD5_String(test, pass, miss) {
@@ -462,6 +468,39 @@ function testCRC32(test, pass, miss) {
     } else {
         test.done(miss());
     }
+}
+
+// --- Benchmark ---
+function testBenchMark(test, pass, miss) {
+    global["BENCHMARK"] = true; {
+
+        var MB = 1024 * 1024;
+        var big = createBigArray(1 * MB);
+        var PERFORMANCE = global["performance"] || Date;
+
+        var point1 = PERFORMANCE.now(); {
+            Hash.XXHash(big);
+        }
+
+        var point2 = PERFORMANCE.now(); {
+            Hash.Murmur(big);
+        }
+
+        var point3 = PERFORMANCE.now(); {
+
+            console.log("XXHash: " + (point2 - point1));
+            console.log("Murmur: " + (point3 - point2));
+
+            /*
+            alert("XXHash: " + (point2 - point1));
+            alert("Murmur: " + (point3 - point2));
+             */
+        }
+
+        global["BENCHMARK"] = false;
+    }
+
+    test.done(pass());
 }
 
 // --- Utility ---
