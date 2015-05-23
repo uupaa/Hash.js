@@ -1,10 +1,6 @@
 var ModuleTestHash = (function(global) {
 
-var _isNodeOrNodeWebKit = !!global.global;
-var _runOnNodeWebKit =  _isNodeOrNodeWebKit &&  /native/.test(setTimeout);
-var _runOnNode       =  _isNodeOrNodeWebKit && !/native/.test(setTimeout);
-var _runOnWorker     = !_isNodeOrNodeWebKit && "WorkerLocation" in global;
-var _runOnBrowser    = !_isNodeOrNodeWebKit && "document" in global;
+global["BENCHMARK"] = false;
 
 var test = new Test("Hash", {
         disable:    false, // disable all tests.
@@ -15,6 +11,10 @@ var test = new Test("Hash", {
         button:     true,  // show button.
         both:       true,  // test the primary and secondary modules.
         ignoreError:false, // ignore error.
+        callback:   function() {
+        },
+        errorback:  function(error) {
+        }
     });
 
     if (Hash.MD5) {
@@ -471,11 +471,7 @@ function testBenchMark(test, pass, miss) {
     test.done(pass());
 }
 
-// --- Utility ---
-function testHexDump(test, pass, miss) {
-}
+return test.run();
 
-return test.run().clone();
-
-})((this || 0).self || global);
+})(GLOBAL);
 
