@@ -29,7 +29,7 @@
   },
   "webmodule": {
     "develop": false,
-    "label": ["@dev", "@md5", "@sha1", "@hmac", "@adler32", "@xxhash", "@murmur", "@crc32"],
+    "label": ["@dev", "@md5", "@sha1", "@hmac"],
     "browser": {
       "source": ["lib/Hash.js"],
       "output": "release/Hash.b.min.js"

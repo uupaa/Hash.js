@@ -187,7 +187,6 @@ function testHMAC_MD5_Binary(test, pass, miss) {
     var answer = "74e6f7298a9c2d168935f58c001bad88";
     var HMAC_MD5 = WebModule.Hash.HMAC("MD5", new Uint8Array(0), new Uint8Array(0));
 
-  //var match = HMAC_MD5.every(function(value, index) {
     var match = Array.prototype.every.call(HMAC_MD5, function(value, index) {
             var hex = parseInt(answer.slice(index * 2, index * 2 + 2), 16);
 
@@ -207,7 +206,6 @@ function testHMAC_SHA1_Binary(test, pass, miss) {
     var answer = "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d";
     var HMAC_SHA1 = WebModule.Hash.HMAC("SHA1", new Uint8Array(0), new Uint8Array(0));
 
-  //var match = HMAC_SHA1.every(function(value, index) {
     var match = Array.prototype.every.call(HMAC_SHA1, function(value, index) {
             var hex = parseInt(answer.slice(index * 2, index * 2 + 2), 16);
 
@@ -440,33 +438,33 @@ function testCRC32(test, pass, miss) {
 
 // --- Benchmark ---
 function testBenchMark(test, pass, miss) {
-    global["BENCHMARK"] = true; {
+    var KB = 1024;
+    var MB = 1024 * 1024;
 
-        var MB = 1024 * 1024;
-        var big = createBigArray(1 * MB);
+    function bench(data) {
         var PERFORMANCE = global["performance"] || Date;
 
-        var point1 = PERFORMANCE.now(); {
-            WebModule.Hash.XXHash(big);
-        }
+        var begin   = PERFORMANCE.now();
+        WebModule.Hash.MD5(data);     var md5     = PERFORMANCE.now();
+        WebModule.Hash.SHA1(data);    var sha1    = PERFORMANCE.now();
+        WebModule.Hash.Adler32(data); var adler32 = PERFORMANCE.now();
+        WebModule.Hash.XXHash(data);  var xxhash  = PERFORMANCE.now();
+        WebModule.Hash.Murmur(data);  var murmur  = PERFORMANCE.now();
+        WebModule.Hash.CRC32(data);   var crc32   = PERFORMANCE.now();
 
-        var point2 = PERFORMANCE.now(); {
-            WebModule.Hash.Murmur(big);
-        }
-
-        var point3 = PERFORMANCE.now(); {
-
-            console.log("XXHash: " + (point2 - point1));
-            console.log("Murmur: " + (point3 - point2));
-
-            /*
-            alert("XXHash: " + (point2 - point1));
-            alert("Murmur: " + (point3 - point2));
-             */
-        }
-
-        global["BENCHMARK"] = false;
+        console.log("DataSize:  " + data.length);
+        console.log("  MD5:     " + (md5 - begin));
+        console.log("  SHA1:    " + (sha1 - md5));
+        console.log("  Adler32: " + (adler32 - sha1));
+        console.log("  XXHash:  " + (xxhash - adler32));
+        console.log("  Murmur:  " + (murmur - xxhash));
+        console.log("  CRC32:   " + (crc32 - murmur));
     }
+    global["BENCHMARK"] = true;
+    bench( createBigArray(100 * KB) );
+    bench( createBigArray(1   * MB) );
+
+    global["BENCHMARK"] = false;
 
     test.done(pass());
 }
