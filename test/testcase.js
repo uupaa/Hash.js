@@ -17,14 +17,14 @@ var test = new Test("Hash", {
         }
     });
 
-    if (Hash.MD5) {
+    if (WebModule.Hash.MD5) {
         test.add([ testMD5_String, testMD5_Binary ]);
     }
-    if (Hash.SHA1) {
+    if (WebModule.Hash.SHA1) {
         test.add([ testSHA1_String, testSHA1_Binary ]);
     }
-    if (Hash.HMAC) {
-        if (Hash.MD5) {
+    if (WebModule.Hash.HMAC) {
+        if (WebModule.Hash.MD5) {
             test.add([
                 testHMAC_MD5_String,
                 testHMAC_MD5_StringWithKey,
@@ -32,7 +32,7 @@ var test = new Test("Hash", {
                 testHMAC_MD5,
             ]);
         }
-        if (Hash.SHA1) {
+        if (WebModule.Hash.SHA1) {
             test.add([
                 testHMAC_SHA1_String,
                 testHMAC_SHA1_StringWithKey,
@@ -41,20 +41,20 @@ var test = new Test("Hash", {
             ]);
         }
     }
-    if (Hash.Adler32) {
+    if (WebModule.Hash.Adler32) {
         test.add([ testAdler32 ]);
     }
-    if (Hash.XXHash) {
+    if (WebModule.Hash.XXHash) {
         test.add([ testXXHash ]);
     }
-    if (Hash.Murmur) {
+    if (WebModule.Hash.Murmur) {
         test.add([ testMurmur ]);
     }
-    if (Hash.CRC32) {
+    if (WebModule.Hash.CRC32) {
         test.add([ testCRC32 ]);
     }
     // --- bench mark ---
-    if (Hash.XXHash && Hash.Murmur) {
+    if (WebModule.Hash.XXHash && WebModule.Hash.Murmur) {
         test.add([
             testBenchMark,
         ]);
@@ -65,7 +65,7 @@ function testMD5_String(test, pass, miss) {
 
     var source = "aaa";
     var answer = "47bce5c74f589f4867dbd57e9ca9f808";
-    var md5HashString = Hash.MD5(source, true);
+    var md5HashString = WebModule.Hash.MD5(source, true);
 
     if (answer === md5HashString) {
         test.done(pass());
@@ -78,7 +78,7 @@ function testMD5_Binary(test, pass, miss) {
 
     var source = "aaa";
     var answer = "47bce5c74f589f4867dbd57e9ca9f808";
-    var md5HashArray = Hash.MD5(source);
+    var md5HashArray = WebModule.Hash.MD5(source);
     var array = Array.prototype.slice.call(md5HashArray);
 
     var match = array.every(function(value, index) {
@@ -99,7 +99,7 @@ function testSHA1_String(test, pass, miss) {
 
     var source = "aaa";
     var answer = "7e240de74fb1ed08fa08d38063f6a6a91462a815";
-    var sha1HashString = Hash.SHA1(source, true);
+    var sha1HashString = WebModule.Hash.SHA1(source, true);
 
     if (answer === sha1HashString) {
         test.done(pass());
@@ -112,7 +112,7 @@ function testSHA1_Binary(test, pass, miss) {
 
     var source = "aaa";
     var answer = "7e240de74fb1ed08fa08d38063f6a6a91462a815";
-    var sha1HashArray = Hash.SHA1(source);
+    var sha1HashArray = WebModule.Hash.SHA1(source);
     var array = Array.prototype.slice.call(sha1HashArray);
 
     var match = array.every(function(value, index) {
@@ -133,7 +133,7 @@ function testHMAC_MD5_String(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "74e6f7298a9c2d168935f58c001bad88";
-    var HMAC_MD5 = Hash.HMAC("MD5", "", "", true);
+    var HMAC_MD5 = WebModule.Hash.HMAC("MD5", "", "", true);
 
     if (answer === HMAC_MD5) {
         test.done(pass());
@@ -146,7 +146,7 @@ function testHMAC_MD5_StringWithKey(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "80070713463e7749b90c2dc24911e275";
-    var HMAC_MD5 = Hash.HMAC("MD5", "key", "The quick brown fox jumps over the lazy dog", true);
+    var HMAC_MD5 = WebModule.Hash.HMAC("MD5", "key", "The quick brown fox jumps over the lazy dog", true);
 
     if (answer === HMAC_MD5) {
         test.done(pass());
@@ -159,7 +159,7 @@ function testHMAC_SHA1_String(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d";
-    var HMAC_SHA1 = Hash.HMAC("SHA1", "", "", true);
+    var HMAC_SHA1 = WebModule.Hash.HMAC("SHA1", "", "", true);
 
     if (answer === HMAC_SHA1) {
         test.done(pass());
@@ -172,7 +172,7 @@ function testHMAC_SHA1_StringWithKey(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9";
-    var HMAC_SHA1 = Hash.HMAC("SHA1", "key", "The quick brown fox jumps over the lazy dog", true);
+    var HMAC_SHA1 = WebModule.Hash.HMAC("SHA1", "key", "The quick brown fox jumps over the lazy dog", true);
 
     if (answer === HMAC_SHA1) {
         test.done(pass());
@@ -185,7 +185,7 @@ function testHMAC_MD5_Binary(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "74e6f7298a9c2d168935f58c001bad88";
-    var HMAC_MD5 = Hash.HMAC("MD5", new Uint8Array(0), new Uint8Array(0));
+    var HMAC_MD5 = WebModule.Hash.HMAC("MD5", new Uint8Array(0), new Uint8Array(0));
 
   //var match = HMAC_MD5.every(function(value, index) {
     var match = Array.prototype.every.call(HMAC_MD5, function(value, index) {
@@ -205,7 +205,7 @@ function testHMAC_SHA1_Binary(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d";
-    var HMAC_SHA1 = Hash.HMAC("SHA1", new Uint8Array(0), new Uint8Array(0));
+    var HMAC_SHA1 = WebModule.Hash.HMAC("SHA1", new Uint8Array(0), new Uint8Array(0));
 
   //var match = HMAC_SHA1.every(function(value, index) {
     var match = Array.prototype.every.call(HMAC_SHA1, function(value, index) {
@@ -225,7 +225,7 @@ function testHMAC_MD5(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "74e6f7298a9c2d168935f58c001bad88";
-    var hash = Hash.HMAC("MD5", "", "", true);
+    var hash = WebModule.Hash.HMAC("MD5", "", "", true);
 
     if (answer === hash) {
         test.done(pass());
@@ -238,7 +238,7 @@ function testHMAC_SHA1(test, pass, miss) {
 
     // this magic value from http://en.wikipedia.org/wiki/HMAC
     var answer = "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d";
-    var hash = Hash.HMAC("SHA1", "", "", true);
+    var hash = WebModule.Hash.HMAC("SHA1", "", "", true);
 
     if (answer === hash) {
         test.done(pass());
@@ -262,10 +262,10 @@ function testAdler32(test, pass, miss) {
             1, 0, 5, 0, 15, 0, 1, 11, 0, 1]);
     var source4 = "Hellp Adler32";
 
-    var result1 = Hash.Adler32(source1);
-    var result2 = Hash.Adler32(source2);
-    var result3 = Hash.Adler32(source3);
-    var result4 = Hash.Adler32(source4);
+    var result1 = WebModule.Hash.Adler32(source1);
+    var result2 = WebModule.Hash.Adler32(source2);
+    var result3 = WebModule.Hash.Adler32(source3);
+    var result4 = WebModule.Hash.Adler32(source4);
 
     if (result1 === 0x9DE210DB &&
         result2 === 0x9DE210DB &&
@@ -308,27 +308,27 @@ function testMurmur(test, pass, miss) {
         };
 
     var result = [
-            Hash.Murmur(source.length_0)         === 0x00000000,
-            Hash.Murmur(source.length_1)         === 0x3c2569b2,
-            Hash.Murmur(source.length_2)         === 0x9bbfd75f,
-            Hash.Murmur(source.length_3)         === 0xb3dd93fa,
-            Hash.Murmur(source.length_4)         === 0x43ed676a,
-            Hash.Murmur(source.length_4, false, 0xabcd) === 0xb95c4c63,
-            Hash.Murmur(source.length_5)         === 0xe89b9af6,
-            Hash.Murmur(source.length_6)         === 0x6181c085,
-            Hash.Murmur(source.length_7)         === 0x883c9b06,
-            Hash.Murmur(source.length_8)         === 0x49ddccc4,
-            Hash.Murmur(source.length_9)         === 0x421406f0,
-            Hash.Murmur(source.length_10)        === 0x88927791,
-            Hash.Murmur(source.length_11)        === 0x5f3b25df,
-            Hash.Murmur(source.length_11, false, 123)   === 0x3cbdcdaa,
-            Hash.Murmur(source.length_16)        === 0x36c7e0df,
-            Hash.Murmur(source.length_17)        === 0x8efa0e6d,
-            Hash.Murmur(source.length_32)        === 0xb3431dee,
-            Hash.Murmur(source.length_33)        === 0x2ef10cb3,
-            Hash.Murmur(source.length_64)        === 0x1329ed6a,
-            Hash.Murmur(source.length_64, false, 64)    === 0x58638bb6,
-            Hash.Murmur(source.bigArray)         === 0x74835d3a,
+            WebModule.Hash.Murmur(source.length_0)         === 0x00000000,
+            WebModule.Hash.Murmur(source.length_1)         === 0x3c2569b2,
+            WebModule.Hash.Murmur(source.length_2)         === 0x9bbfd75f,
+            WebModule.Hash.Murmur(source.length_3)         === 0xb3dd93fa,
+            WebModule.Hash.Murmur(source.length_4)         === 0x43ed676a,
+            WebModule.Hash.Murmur(source.length_4, false, 0xabcd) === 0xb95c4c63,
+            WebModule.Hash.Murmur(source.length_5)         === 0xe89b9af6,
+            WebModule.Hash.Murmur(source.length_6)         === 0x6181c085,
+            WebModule.Hash.Murmur(source.length_7)         === 0x883c9b06,
+            WebModule.Hash.Murmur(source.length_8)         === 0x49ddccc4,
+            WebModule.Hash.Murmur(source.length_9)         === 0x421406f0,
+            WebModule.Hash.Murmur(source.length_10)        === 0x88927791,
+            WebModule.Hash.Murmur(source.length_11)        === 0x5f3b25df,
+            WebModule.Hash.Murmur(source.length_11, false, 123)   === 0x3cbdcdaa,
+            WebModule.Hash.Murmur(source.length_16)        === 0x36c7e0df,
+            WebModule.Hash.Murmur(source.length_17)        === 0x8efa0e6d,
+            WebModule.Hash.Murmur(source.length_32)        === 0xb3431dee,
+            WebModule.Hash.Murmur(source.length_33)        === 0x2ef10cb3,
+            WebModule.Hash.Murmur(source.length_64)        === 0x1329ed6a,
+            WebModule.Hash.Murmur(source.length_64, false, 64)    === 0x58638bb6,
+            WebModule.Hash.Murmur(source.bigArray)         === 0x74835d3a,
         ];
 
     if (!/false/.test(result.join(","))) {
@@ -370,27 +370,27 @@ function testXXHash(test, pass, miss) {
         };
 
     var result = [
-            Hash.XXHash(source.length_0)         === 0x02cc5d05,
-            Hash.XXHash(source.length_1)         === 0x550d7456,
-            Hash.XXHash(source.length_2)         === 0x4999fc53,
-            Hash.XXHash(source.length_3)         === 0x32d153ff,
-            Hash.XXHash(source.length_4)         === 0xa3643705,
-            Hash.XXHash(source.length_4, false, 0xabcd) === 0xcda8fae4,
-            Hash.XXHash(source.length_5)         === 0x9738f19b,
-            Hash.XXHash(source.length_6)         === 0x8b7cd587,
-            Hash.XXHash(source.length_7)         === 0x9dd093b3,
-            Hash.XXHash(source.length_8)         === 0x0bb3c6bb,
-            Hash.XXHash(source.length_9)         === 0xd03c13fd,
-            Hash.XXHash(source.length_10)        === 0x8b988cfe,
-            Hash.XXHash(source.length_11)        === 0x9db8a215,
-            Hash.XXHash(source.length_11, false, 123)   === 0x69659438,
-            Hash.XXHash(source.length_16)        === 0xc2c45b69,
-            Hash.XXHash(source.length_17)        === 0xaa9118bd,
-            Hash.XXHash(source.length_32)        === 0xeb888d30,
-            Hash.XXHash(source.length_33)        === 0x5c28f38d,
-            Hash.XXHash(source.length_64)        === 0xe717e5fb,
-            Hash.XXHash(source.length_64, false, 64)    === 0x01198f54,
-            Hash.XXHash(source.bigArray)         === 0xc419ee19,
+            WebModule.Hash.XXHash(source.length_0)         === 0x02cc5d05,
+            WebModule.Hash.XXHash(source.length_1)         === 0x550d7456,
+            WebModule.Hash.XXHash(source.length_2)         === 0x4999fc53,
+            WebModule.Hash.XXHash(source.length_3)         === 0x32d153ff,
+            WebModule.Hash.XXHash(source.length_4)         === 0xa3643705,
+            WebModule.Hash.XXHash(source.length_4, false, 0xabcd) === 0xcda8fae4,
+            WebModule.Hash.XXHash(source.length_5)         === 0x9738f19b,
+            WebModule.Hash.XXHash(source.length_6)         === 0x8b7cd587,
+            WebModule.Hash.XXHash(source.length_7)         === 0x9dd093b3,
+            WebModule.Hash.XXHash(source.length_8)         === 0x0bb3c6bb,
+            WebModule.Hash.XXHash(source.length_9)         === 0xd03c13fd,
+            WebModule.Hash.XXHash(source.length_10)        === 0x8b988cfe,
+            WebModule.Hash.XXHash(source.length_11)        === 0x9db8a215,
+            WebModule.Hash.XXHash(source.length_11, false, 123)   === 0x69659438,
+            WebModule.Hash.XXHash(source.length_16)        === 0xc2c45b69,
+            WebModule.Hash.XXHash(source.length_17)        === 0xaa9118bd,
+            WebModule.Hash.XXHash(source.length_32)        === 0xeb888d30,
+            WebModule.Hash.XXHash(source.length_33)        === 0x5c28f38d,
+            WebModule.Hash.XXHash(source.length_64)        === 0xe717e5fb,
+            WebModule.Hash.XXHash(source.length_64, false, 64)    === 0x01198f54,
+            WebModule.Hash.XXHash(source.bigArray)         === 0xc419ee19,
         ];
 
     if (!/false/.test(result.join(","))) {
@@ -417,16 +417,16 @@ function testCRC32(test, pass, miss) {
     //                                    chunkDataSize = 13         "IHDR"                   width                     height          depth type       dummy                checksum
     var png_IDAT_gold = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xC8, 0x08, 0x02, 0x00, 0x00, 0x00, 0x22, 0x3A, 0x39, 0xC9]);
 
-    var r1 = Hash.CRC32(png_IEND,      false, 4, 4 + 0);
-    var r2 = Hash.CRC32(png_IDAT_3x3,  false, 4, 4 + 13);
-    var r3 = Hash.CRC32(png_IDAT_gold, false, 4, 4 + 13);
+    var r1 = WebModule.Hash.CRC32(png_IEND,      false, 4, 4 + 0);
+    var r2 = WebModule.Hash.CRC32(png_IDAT_3x3,  false, 4, 4 + 13);
+    var r3 = WebModule.Hash.CRC32(png_IDAT_gold, false, 4, 4 + 13);
 
-    if (Hash.HexDump) {
+    if (WebModule.Hash.HexDump) {
         var hexOptions = { width: 8, joint: "", upper: true, noprefix: true };
 
-        Hash.HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
-        Hash.HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
-        Hash.HexDump( new Uint8Array([r3 >>> 24, r3 >> 16, r3 >> 8, r3]), hexOptions);
+        WebModule.Hash.HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
+        WebModule.Hash.HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
+        WebModule.Hash.HexDump( new Uint8Array([r3 >>> 24, r3 >> 16, r3 >> 8, r3]), hexOptions);
     }
 
     if (r1 === 0xAE426082 &&
@@ -447,11 +447,11 @@ function testBenchMark(test, pass, miss) {
         var PERFORMANCE = global["performance"] || Date;
 
         var point1 = PERFORMANCE.now(); {
-            Hash.XXHash(big);
+            WebModule.Hash.XXHash(big);
         }
 
         var point2 = PERFORMANCE.now(); {
-            Hash.Murmur(big);
+            WebModule.Hash.Murmur(big);
         }
 
         var point3 = PERFORMANCE.now(); {
