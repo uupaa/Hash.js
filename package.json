@@ -1,7 +1,7 @@
 {
   "name": "uupaa.hash.js",
-  "version": "0.2.0",
-  "description": "Hash functions.",
+  "version": "0.2.1",
+  "description": "",
   "url": "https://github.com/uupaa/Hash.js",
   "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "xxHash", "Murmur", "CRC32", "uupaa", "WebModule", "Unstable"],
   "repository": {

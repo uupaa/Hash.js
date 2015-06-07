@@ -10,8 +10,8 @@
 ## Browser and NW.js(node-webkit)
 
 ```js
-<script src="<your-install-dir>/lib/WebModule.js"></script>
-<script src="<your-install-dir>/lib/Hash.js"></script>
+<script src="<module-dir>/lib/WebModule.js"></script>
+<script src="<module-dir>/lib/Hash.js"></script>
 <script>
 
 console.log( WebModule.Hash.MD5("aaa", true)  ); // "47bce5c74f589f4867dbd57e9ca9f808"
@@ -29,16 +29,16 @@ console.log( WebModule.Hash.CRC32("0123456789abcdef", true) );  // "68c4f033"
 ## WebWorkers
 
 ```js
-importScripts("<your-install-dir>lib/WebModule.js");
-importScripts("<your-install-dir>lib/Hash.js");
+importScripts("<module-dir>lib/WebModule.js");
+importScripts("<module-dir>lib/Hash.js");
 
 ```
 
 ## Node.js
 
 ```js
-require("<your-install-dir>lib/WebModule.js");
-require("<your-install-dir>lib/Hash.js");
+require("<module-dir>lib/WebModule.js");
+require("<module-dir>lib/Hash.js");
 
 ```
 
