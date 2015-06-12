@@ -1,6 +1,6 @@
 {
   "name": "uupaa.hash.js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "",
   "url": "https://github.com/uupaa/Hash.js",
   "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "xxHash", "Murmur", "CRC32", "uupaa", "WebModule", "Unstable"],
@@ -10,6 +10,7 @@
   },
   "scripts": {
     "sync": "node ../WebModule/run/sync.js; npm update; node ../WebModule/run/page.js",
+    "wiki": "node ../WebModule/run/wiki.js",
     "min": "node ../WebModule/run/minify.js --verbose --strict --keep --pretty",
     "build": "node ../WebModule/run/minify.js --verbose --strict --keep --release",
     "watch": "node ../WebModule/run/watch.js --verbose --run lint",
