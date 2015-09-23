@@ -1,6 +1,6 @@
 {
   "name": "uupaa.hash.js",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "url": "https://github.com/uupaa/Hash.js",
   "keywords": ["Hash", "MD5", "SHA1", "HMAC", "Adler32", "xxHash", "Murmur", "CRC32", "uupaa", "WebModule", "Unstable"],
@@ -26,7 +26,8 @@
     "patch": "node ../WebModule/run/patch.js",
     "setup": "node ../WebModule/run/setup.js",
     "start": "cd ../; Python -m SimpleHTTPServer 8000 &",
-    "stop": "killall -- Python -m SimpleHTTPServer 8000; exit 0"
+    "stop": "killall -- Python -m SimpleHTTPServer 8000; exit 0",
+    "add-src": "node ../WebModule/run/add-src.js"
   },
   "webmodule": {
     "develop": false,
