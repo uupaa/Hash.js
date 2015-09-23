@@ -53,6 +53,9 @@ var test = new Test("Hash", {
     if (WebModule.Hash.CRC32) {
         test.add([ testCRC32 ]);
     }
+    if (WebModule.Hash.CRC32M) {
+        test.add([ testCRC32M ]);
+    }
     // --- bench mark ---
     if (WebModule.Hash.XXHash && WebModule.Hash.Murmur) {
         test.add([
@@ -436,6 +439,45 @@ function testCRC32(test, pass, miss) {
     }
 }
 
+function testCRC32M(test, pass, miss) {
+    /* MPEG2-TS MPEG2/CRC32 PAT
+    ADRESS  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+    ------ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    000000 00 b0 0d 00 01 c1 00 00 00 01 ef ff
+    */
+    var PAT = new Uint8Array([0x00, 0xb0, 0x0d, 0x00, 0x01, 0xc1, 0x00, 0x00, 0x00, 0x01, 0xef, 0xff]);
+
+    /* MPEG2-TS MPEG2/CRC32 PMT
+    ADRESS  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+    ------ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    000000 02 b0 3c 00 01 c1 00 00 e1 00 f0 11 25 0f ff ff
+    000010 49 44 33 20 ff 49 44 33 20 00 1f 00 01 15 e1 02
+    000020 f0 0f 26 0d ff ff 49 44 33 20 ff 49 44 33 20 00
+    000030 0f 1b e1 00 f0 00 0f e1 01 f0 00 d2 7f 16 89
+     */
+    var PMT = new Uint8Array([0x02, 0xb0, 0x3c, 0x00, 0x01, 0xc1, 0x00, 0x00, 0xe1, 0x00, 0xf0, 0x11, 0x25, 0x0f, 0xff, 0xff,
+                              0x49, 0x44, 0x33, 0x20, 0xff, 0x49, 0x44, 0x33, 0x20, 0x00, 0x1f, 0x00, 0x01, 0x15, 0xe1, 0x02,
+                              0xf0, 0x0f, 0x26, 0x0d, 0xff, 0xff, 0x49, 0x44, 0x33, 0x20, 0xff, 0x49, 0x44, 0x33, 0x20, 0x00,
+                              0x0f, 0x1b, 0xe1, 0x00, 0xf0, 0x00, 0x0f, 0xe1, 0x01, 0xf0, 0x00, 0xd2, 0x7f, 0x16, 0x89]);
+
+    var r1 = WebModule.Hash.CRC32M(PAT, false, 0, 0, 0xffffffff);
+    var r2 = WebModule.Hash.CRC32M(PMT, false, 0, 0, 0xffffffff);
+
+    if (WebModule.Hash.HexDump) {
+        var hexOptions = { width: 8, joint: "", upper: true, noprefix: true };
+
+        WebModule.Hash.HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
+        WebModule.Hash.HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
+    }
+
+    if (r1 === 0x3690e23d &&
+        r2 === 0xd27f1689) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
 // --- Benchmark ---
 function testBenchMark(test, pass, miss) {
     var KB = 1024;
@@ -451,6 +493,7 @@ function testBenchMark(test, pass, miss) {
         WebModule.Hash.XXHash(data);  var xxhash  = PERFORMANCE.now();
         WebModule.Hash.Murmur(data);  var murmur  = PERFORMANCE.now();
         WebModule.Hash.CRC32(data);   var crc32   = PERFORMANCE.now();
+        WebModule.Hash.CRC32M(data);  var crc32m  = PERFORMANCE.now();
 
         console.log("DataSize:  " + data.length);
         console.log("  MD5:     " + (md5 - begin));
@@ -459,6 +502,7 @@ function testBenchMark(test, pass, miss) {
         console.log("  XXHash:  " + (xxhash - adler32));
         console.log("  Murmur:  " + (murmur - xxhash));
         console.log("  CRC32:   " + (crc32 - murmur));
+        console.log("  CRC32M:  " + (crc32m - crc32));
     }
     global["BENCHMARK"] = true;
     bench( createBigArray(100 * KB) );
