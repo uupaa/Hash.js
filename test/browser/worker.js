@@ -12,16 +12,17 @@ onmessage = function(event) {
         self.console.table = function() {};
     }
 
-    importScripts("../lib/WebModule.js");
+    importScripts("../../lib/WebModule.js");
 
-    // publish to global
+    WebModule.verify  = true;
+    WebModule.verbose = true;
     WebModule.publish = true;
 
     
-    importScripts("wmtools.js");
-    importScripts("../lib/Hash.js");
-    importScripts("../release/Hash.w.min.js");
-    importScripts("testcase.js");
+    importScripts("../wmtools.js");
+    importScripts("../../lib/Hash.js");
+    importScripts("../../release/Hash.w.min.js");
+    importScripts("../testcase.js");
 
     self.postMessage(self.unitTest);
 };

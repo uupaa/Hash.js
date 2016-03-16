@@ -1,19 +1,19 @@
 var ModuleTestHash = (function(global) {
 
-global["BENCHMARK"] = false;
-
-var test = new Test("Hash", {
+var test = new Test(["Hash"], { // Add the ModuleName to be tested here (if necessary).
         disable:    false, // disable all tests.
         browser:    true,  // enable browser test.
         worker:     true,  // enable worker test.
         node:       true,  // enable node test.
         nw:         true,  // enable nw.js test.
+        el:         true,  // enable electron (render process) test.
         button:     true,  // show button.
         both:       true,  // test the primary and secondary modules.
         ignoreError:false, // ignore error.
         callback:   function() {
         },
         errorback:  function(error) {
+            console.error(error.message);
         }
     });
 
@@ -53,9 +53,9 @@ var test = new Test("Hash", {
     if (Hash.CRC32) {
         test.add([ testCRC32 ]);
     }
-    if (Hash.CRC32M) {
-        test.add([ testCRC32M ]);
-    }
+//    if (Hash.CRC32M) {
+//        test.add([ testCRC32M ]);
+//    }
     // --- bench mark ---
     if (Hash.XXHash && Hash.Murmur) {
         test.add([
@@ -63,6 +63,7 @@ var test = new Test("Hash", {
         ]);
     }
 
+// --- test cases ------------------------------------------
 // --- MD5 ---
 function testMD5_String(test, pass, miss) {
 
@@ -504,11 +505,12 @@ function testBenchMark(test, pass, miss) {
         console.log("  CRC32:   " + (crc32 - murmur));
         console.log("  CRC32M:  " + (crc32m - crc32));
     }
-    global["BENCHMARK"] = true;
+    // TODO: benchmark mode
+    //global["BENCHMARK"] = true;
     bench( createBigArray(100 * KB) );
     bench( createBigArray(1   * MB) );
 
-    global["BENCHMARK"] = false;
+    //global["BENCHMARK"] = false;
 
     test.done(pass());
 }
