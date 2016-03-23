@@ -50,12 +50,19 @@ var test = new Test(["Hash"], { // Add the ModuleName to be tested here (if nece
     if (Hash.Murmur) {
         test.add([ testMurmur ]);
     }
-    if (Hash.CRC32) {
-        test.add([ testCRC32 ]);
+    if (Hash.CRC) {
+        test.add([
+            testCRC16_CCITT,
+            testCRC16_IBM,
+            testCRC32,
+            testCRC32_MPEG,
+        ]);
+        test.add([
+            testCRC32_PNG,
+            testCRC32_MPEG_PAT,
+            testCRC32_MPEG_PMT
+        ]);
     }
-//    if (Hash.CRC32M) {
-//        test.add([ testCRC32M ]);
-//    }
     // --- bench mark ---
     if (Hash.XXHash && Hash.Murmur) {
         test.add([
@@ -411,24 +418,85 @@ function createBigArray(length) {
     return result;
 }
 
-// --- CRC32 ---
+// --- CRC ---
+function testCRC16_CCITT(test, pass, miss) {
+    // ./pycrc.py --model crc-16-ccitt --check-file hello.txt -> 0x32ac
+    var sample = new Uint8Array([0x68, 0x65, 0x6C, 0x6C, 0x6F]);
+    var r1     = Hash.CRC(sample, Hash.CRC16_CCITT);
+
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "CRC16_CCITT", rule: {} } );
+    }
+    if (r1 === 0x32AC) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
+function testCRC16_IBM(test, pass, miss) {
+    // ./pycrc.py --model crc-16 --check-file hello.txt -> 0x34d2
+    var sample = new Uint8Array([0x68, 0x65, 0x6C, 0x6C, 0x6F]);
+    var r1     = Hash.CRC(sample, Hash.CRC16_IBM);
+    var r2     = Hash.CRC(sample, Hash.CRC16_IBM, { hex: true });
+
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "CRC16_IBM", rule: {} } );
+    }
+    if (r1 === 0x34D2) { // 0x34D2 = 13522
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
 function testCRC32(test, pass, miss) {
+    // ./pycrc.py --model crc-32 --check-file hello.txt -> 0x3610a686
+    var sample = new Uint8Array([0x68, 0x65, 0x6C, 0x6C, 0x6F]);
+    var r1     = Hash.CRC(sample, Hash.CRC32);
+
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "CRC32", rule: {} } );
+    }
+
+    if (r1 === 0x3610A686) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
+function testCRC32_MPEG(test, pass, miss) {
+    // ./pycrc.py --model crc-32-mpeg --check-file hello.txt -> 0xe6ce9ac2
+    var sample = new Uint8Array([0x68, 0x65, 0x6C, 0x6C, 0x6F]);
+    var r1     = Hash.CRC(sample, Hash.CRC32_MPEG2);
+
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "CRC32_MPEG2", rule: {} } );
+    }
+
+    if (r1 === 0xE6CE9AC2) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
+function testCRC32_PNG(test, pass, miss) {
     var png_IEND      = new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44,                                                                               0xAE, 0x42, 0x60, 0x82]);
     var png_IDAT_3x3  = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x08, 0x06, 0x00, 0x00, 0x00, 0x56, 0x28, 0xB5, 0xBF]);
     //                                  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~  ~~~~  ~~~~  ~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~
     //                                    chunkDataSize = 13         "IHDR"                   width                     height          depth type       dummy                checksum
     var png_IDAT_gold = new Uint8Array([0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0xC8, 0x00, 0x00, 0x00, 0xC8, 0x08, 0x02, 0x00, 0x00, 0x00, 0x22, 0x3A, 0x39, 0xC9]);
 
-    var r1 = Hash.CRC32(png_IEND,      false, 4, 4 + 0);
-    var r2 = Hash.CRC32(png_IDAT_3x3,  false, 4, 4 + 13);
-    var r3 = Hash.CRC32(png_IDAT_gold, false, 4, 4 + 13);
+    var r1 = Hash.CRC(png_IEND,      Hash.CRC32, { hex: false, offset: 4, length: 4 + 0  });
+    var r2 = Hash.CRC(png_IDAT_3x3,  Hash.CRC32, { hex: false, offset: 4, length: 4 + 13 });
+    var r3 = Hash.CRC(png_IDAT_gold, Hash.CRC32, { hex: false, offset: 4, length: 4 + 13 });
 
-    if (Hash.HexDump) {
-        var hexOptions = { width: 8, joint: "", upper: true, noprefix: true };
-
-        Hash.HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
-        Hash.HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
-        Hash.HexDump( new Uint8Array([r3 >>> 24, r3 >> 16, r3 >> 8, r3]), hexOptions);
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "IEND",      rule: {} } );
+        HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), { title: "IDAT_3x3",  rule: {} } );
+        HexDump( new Uint8Array([r3 >>> 24, r3 >> 16, r3 >> 8, r3]), { title: "IDAT_gold", rule: {} } );
     }
 
     if (r1 === 0xAE426082 &&
@@ -440,14 +508,27 @@ function testCRC32(test, pass, miss) {
     }
 }
 
-function testCRC32M(test, pass, miss) {
+function testCRC32_MPEG_PAT(test, pass, miss) {
     /* MPEG2-TS MPEG2/CRC32 PAT
     ADRESS  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
     ------ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     000000 00 b0 0d 00 01 c1 00 00 00 01 ef ff
     */
     var PAT = new Uint8Array([0x00, 0xb0, 0x0d, 0x00, 0x01, 0xc1, 0x00, 0x00, 0x00, 0x01, 0xef, 0xff]);
+    var r1  = Hash.CRC(PAT, Hash.CRC32_MPEG2);
 
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "PAT", rule: {} } );
+    }
+
+    if (r1 === 0x3690e23d) {
+        test.done(pass());
+    } else {
+        test.done(miss());
+    }
+}
+
+function testCRC32_MPEG_PMT(test, pass, miss) {
     /* MPEG2-TS MPEG2/CRC32 PMT
     ADRESS  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
     ------ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -455,24 +536,19 @@ function testCRC32M(test, pass, miss) {
     000010 49 44 33 20 ff 49 44 33 20 00 1f 00 01 15 e1 02
     000020 f0 0f 26 0d ff ff 49 44 33 20 ff 49 44 33 20 00
     000030 0f 1b e1 00 f0 00 0f e1 01 f0 00 d2 7f 16 89
+                                            ~~~~~~~~~~~ CRC-32/MPEG2 value
      */
     var PMT = new Uint8Array([0x02, 0xb0, 0x3c, 0x00, 0x01, 0xc1, 0x00, 0x00, 0xe1, 0x00, 0xf0, 0x11, 0x25, 0x0f, 0xff, 0xff,
                               0x49, 0x44, 0x33, 0x20, 0xff, 0x49, 0x44, 0x33, 0x20, 0x00, 0x1f, 0x00, 0x01, 0x15, 0xe1, 0x02,
                               0xf0, 0x0f, 0x26, 0x0d, 0xff, 0xff, 0x49, 0x44, 0x33, 0x20, 0xff, 0x49, 0x44, 0x33, 0x20, 0x00,
-                              0x0f, 0x1b, 0xe1, 0x00, 0xf0, 0x00, 0x0f, 0xe1, 0x01, 0xf0, 0x00, 0xd2, 0x7f, 0x16, 0x89]);
+                              0x0f, 0x1b, 0xe1, 0x00, 0xf0, 0x00, 0x0f, 0xe1, 0x01, 0xf0, 0x00]); // 0xd2, 0x7f, 0x16, 0x89
+    var r1  = Hash.CRC(PMT, Hash.CRC32_MPEG2);
 
-    var r1 = Hash.CRC32M(PAT, false, 0, 0, 0xffffffff);
-    var r2 = Hash.CRC32M(PMT, false, 0, 0, 0xffffffff);
-
-    if (Hash.HexDump) {
-        var hexOptions = { width: 8, joint: "", upper: true, noprefix: true };
-
-        Hash.HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), hexOptions);
-        Hash.HexDump( new Uint8Array([r2 >>> 24, r2 >> 16, r2 >> 8, r2]), hexOptions);
+    if (HexDump) {
+        HexDump( new Uint8Array([r1 >>> 24, r1 >> 16, r1 >> 8, r1]), { title: "PMT", rule: {} } );
     }
 
-    if (r1 === 0x3690e23d &&
-        r2 === 0xd27f1689) {
+    if (r1 === 0xd27f1689) {
         test.done(pass());
     } else {
         test.done(miss());
@@ -488,13 +564,12 @@ function testBenchMark(test, pass, miss) {
         var PERFORMANCE = global["performance"] || Date;
 
         var begin   = PERFORMANCE.now();
-        Hash.MD5(data);     var md5     = PERFORMANCE.now();
-        Hash.SHA1(data);    var sha1    = PERFORMANCE.now();
-        Hash.Adler32(data); var adler32 = PERFORMANCE.now();
-        Hash.XXHash(data);  var xxhash  = PERFORMANCE.now();
-        Hash.Murmur(data);  var murmur  = PERFORMANCE.now();
-        Hash.CRC32(data);   var crc32   = PERFORMANCE.now();
-        Hash.CRC32M(data);  var crc32m  = PERFORMANCE.now();
+        Hash.MD5(data);             var md5     = PERFORMANCE.now();
+        Hash.SHA1(data);            var sha1    = PERFORMANCE.now();
+        Hash.Adler32(data);         var adler32 = PERFORMANCE.now();
+        Hash.XXHash(data);          var xxhash  = PERFORMANCE.now();
+        Hash.Murmur(data);          var murmur  = PERFORMANCE.now();
+        Hash.CRC(data, Hash.CRC32); var crc32   = PERFORMANCE.now();
 
         console.log("DataSize:  " + data.length);
         console.log("  MD5:     " + (md5 - begin));
@@ -502,8 +577,7 @@ function testBenchMark(test, pass, miss) {
         console.log("  Adler32: " + (adler32 - sha1));
         console.log("  XXHash:  " + (xxhash - adler32));
         console.log("  Murmur:  " + (murmur - xxhash));
-        console.log("  CRC32:   " + (crc32 - murmur));
-        console.log("  CRC32M:  " + (crc32m - crc32));
+        console.log("  CRC:     " + (crc32 - murmur));
     }
     // TODO: benchmark mode
     //global["BENCHMARK"] = true;
