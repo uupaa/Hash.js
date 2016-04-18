@@ -32,16 +32,16 @@ Hash.CRC("0123456789abcdef", Hash.CRC32, { hex: true }); // -> "68c4f033"
 ## WebWorkers
 
 ```js
-importScripts("<module-dir>lib/WebModule.js");
-importScripts("<module-dir>lib/Hash.js");
+importScripts("<module-dir>/lib/WebModule.js");
+importScripts("<module-dir>/lib/Hash.js");
 
 ```
 
 ## Node.js
 
 ```js
-require("<module-dir>lib/WebModule.js");
-require("<module-dir>lib/Hash.js");
+require("<module-dir>/lib/WebModule.js");
+require("<module-dir>/lib/Hash.js");
 
 ```
 

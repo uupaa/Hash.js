@@ -2,9 +2,9 @@
 
 require("../../lib/WebModule.js");
 
-WebModule.verify  = true;
-WebModule.verbose = true;
-WebModule.publish = true;
+WebModule.VERIFY  = true;
+WebModule.VERBOSE = true;
+WebModule.PUBLISH = true;
 
 require("../../node_modules/uupaa.hexdump.js/lib/HexDump.js");
 require("../../node_modules/uupaa.bit.js/lib/Bit.js");
